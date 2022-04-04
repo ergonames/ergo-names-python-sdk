@@ -54,7 +54,7 @@ def get_transactions(address, offset):
     data = requests.get(url).json()
     return data
 
-def create_transaction_array(address, offset):
+def create_small_transaction_array(address, offset):
     transactionData = get_transactions(address, offset)["items"]
     transactionArray = []
     for i in transactionData:
@@ -65,24 +65,58 @@ def create_transaction_array(address, offset):
         transactionArray.append(t)
     return transactionArray
 
+def create_full_transaction_array():
+    total = amount_transactions_at_address(MINT_ADDRESS)
+    neededCalls = math.floor(total / 500) + 1
+    offset = 0
+    transactionArray = []
+    for i in range(neededCalls):
+        transactionArray += create_small_transaction_array(MINT_ADDRESS, offset)
+        offset += 500
+    return transactionArray
+
+def update_transaction_array(transactionArray):
+    index = 0
+    for tx in transactionArray:
+        tx.update_outputs()
+        for opt in transactionArray[index].outputs:
+            opt.update_assets()
+        index += 1
+    return transactionArray
+
 def lookup_ergoname_id(transactionArray, name):
+    exists = False
+    id = ""
     for i in transactionArray:
         for o in i.outputs:
             for a in o.assets:
                 if name == a.name:
-                    return a.tokenId
+                    exists = True
+                    id = a.tokenId
+                    break
+    
+    if exists:
+        return id
+    else:
+        return "None"
 
 def get_box_of_asset(id):
-    url = TESTNET_API_URL + "/api/v1/tokens/" + str(id)
-    data = requests.get(url).json()
-    boxId = data["boxId"]
-    return boxId
+    if id != "None":
+        url = TESTNET_API_URL + "/api/v1/tokens/" + str(id)
+        data = requests.get(url).json()
+        boxId = data["boxId"]
+        return boxId
+    else:
+        return "None"
 
 def get_box_id_address(boxId):
-    url = TESTNET_API_URL + "/api/v1/boxes/" + str(boxId)
-    data = requests.get(url).json()
-    address = data["address"]
-    return address
+    if boxId != "None":
+        url = TESTNET_API_URL + "/api/v1/boxes/" + str(boxId)
+        data = requests.get(url).json()
+        address = data["address"]
+        return address
+    else:
+        return "None"
 
 def reformat_name(name):
     newName = ""
@@ -94,21 +128,8 @@ def reformat_name(name):
     return newName
 
 def resolve_ergoname(name):
-    total = amount_transactions_at_address(MINT_ADDRESS)
-    neededCalls = math.floor(total / 500) + 1
-    offset = 0
-    transactionArray = []
-    for i in range(neededCalls):
-        transactionArray += create_transaction_array(MINT_ADDRESS, offset)
-        offset += 500
-
-    index = 0
-    for i in transactionArray:
-        i.update_outputs()
-        for o in transactionArray[index].outputs:
-            o.update_assets()
-        index += 1
-    
+    transactionArray = create_full_transaction_array()
+    transactionArray = update_transaction_array(transactionArray)
     id = lookup_ergoname_id(transactionArray, name)
     boxId = get_box_of_asset(id)
     address = get_box_id_address(boxId)
