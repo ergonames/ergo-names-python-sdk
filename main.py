@@ -98,25 +98,25 @@ def lookup_ergoname_id(transactionArray, name):
     if exists:
         return id
     else:
-        return "None"
+        return None
 
 def get_box_of_asset(id):
-    if id != "None":
+    if id != None:
         url = TESTNET_API_URL + "/api/v1/tokens/" + str(id)
         data = requests.get(url).json()
         boxId = data["boxId"]
         return boxId
     else:
-        return "None"
+        return None
 
 def get_box_id_address(boxId):
-    if boxId != "None":
+    if boxId != None:
         url = TESTNET_API_URL + "/api/v1/boxes/" + str(boxId)
         data = requests.get(url).json()
         address = data["address"]
         return address
     else:
-        return "None"
+        return None
 
 def reformat_name(name):
     newName = ""
