@@ -44,19 +44,19 @@ class Asset:
         self.tokenId = tokenId
         self.name = name
 
-def amount_transactions_at_address(address):
+def get_total_transactions_of_mint_address(address):
     url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions"
     data = requests.get(url).json()
     total = data["total"]
     return total
 
-def get_transactions(address, offset):
+def get_raw_transaction_data(address, offset):
     url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
     data = requests.get(url).json()
     return data
 
 def create_small_transaction_array(address, offset):
-    transactionData = get_transactions(address, offset)["items"]
+    transactionData = get_raw_transaction_data(address, offset)["items"]
     transactionArray = []
     for i in transactionData:
         id = i["id"]
@@ -66,8 +66,8 @@ def create_small_transaction_array(address, offset):
         transactionArray.append(t)
     return transactionArray
 
-def create_full_transaction_array():
-    total = amount_transactions_at_address(MINT_ADDRESS)
+def create_complete_transaction_array():
+    total = get_total_transactions_of_mint_address(MINT_ADDRESS)
     neededCalls = math.floor(total / 500) + 1
     offset = 0
     transactionArray = []
@@ -85,12 +85,12 @@ def update_transaction_array(transactionArray):
         index += 1
     return transactionArray
 
-def lookup_ergoname_id(transactionArray, name):
+def get_asset_id(transactionArray, name):
     exists = False
     id = ""
     for i in transactionArray:
         for o in i.outputs:
-            if check_minting_transaction():
+            if check_if_transaction_mints_token():
                 for a in o.assets:
                     if name == a.name:
                         exists = True
@@ -102,7 +102,7 @@ def lookup_ergoname_id(transactionArray, name):
     else:
         return None
 
-def get_box_of_asset(id):
+def get_box_id_of_asset(id):
     if id != None:
         url = TESTNET_API_URL + "/api/v1/tokens/" + str(id)
         data = requests.get(url).json()
@@ -120,23 +120,14 @@ def get_box_id_address(boxId):
     else:
         return None
 
-def check_minting_transaction():
+def check_if_transaction_mints_token():
     return True
 
-def reformat_name(name):
-    newName = ""
-    for i in name:
-        if i == " ":
-            newName += "%20"
-        else:
-            newName += i
-    return newName
-
 def resolve_ergoname(name):
-    transactionArray = create_full_transaction_array()
+    transactionArray = create_complete_transaction_array()
     transactionArray = update_transaction_array(transactionArray)
-    id = lookup_ergoname_id(transactionArray, name)
-    boxId = get_box_of_asset(id)
+    id = get_asset_id(transactionArray, name)
+    boxId = get_box_id_of_asset(id)
     address = get_box_id_address(boxId)
     return address
 
