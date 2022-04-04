@@ -1,5 +1,6 @@
 import requests
 import math
+import time
 
 TESTNET_API_URL = "https://api-testnet.ergoplatform.com/"
 MAINNET_API_URL = "https://api.ergoplatform.com/"
@@ -89,11 +90,12 @@ def lookup_ergoname_id(transactionArray, name):
     id = ""
     for i in transactionArray:
         for o in i.outputs:
-            for a in o.assets:
-                if name == a.name:
-                    exists = True
-                    id = a.tokenId
-                    break
+            if check_minting_transaction():
+                for a in o.assets:
+                    if name == a.name:
+                        exists = True
+                        id = a.tokenId
+                        break
     
     if exists:
         return id
@@ -118,6 +120,9 @@ def get_box_id_address(boxId):
     else:
         return None
 
+def check_minting_transaction():
+    return True
+
 def reformat_name(name):
     newName = ""
     for i in name:
@@ -137,8 +142,12 @@ def resolve_ergoname(name):
 
 def main():
 
+    start_time = time.time()
+
     address = resolve_ergoname("test mint v0.1.1")
     print(address)
+
+    print("\nProgram takes " + str(time.time() - start_time) + " seconds to run")
 
 if __name__=="__main__":
     main()
