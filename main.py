@@ -44,13 +44,13 @@ class Asset:
         self.name = name
 
 def amount_transactions_at_address(address):
-    url = "https://api-testnet.ergoplatform.com/api/v1/addresses/" + str(address) + "/transactions"
+    url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions"
     data = requests.get(url).json()
     total = data["total"]
     return total
 
 def get_transactions(address, offset):
-    url = "https://api-testnet.ergoplatform.com/api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
+    url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
     data = requests.get(url).json()
     return data
 
