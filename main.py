@@ -2,8 +2,7 @@ import requests
 import math
 import time
 
-TESTNET_API_URL = "https://api-testnet.ergoplatform.com/"
-MAINNET_API_URL = "https://api.ergoplatform.com/"
+EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
 
@@ -45,13 +44,13 @@ class Asset:
         self.name = name
 
 def get_total_transactions_of_mint_address(address):
-    url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions"
+    url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/transactions"
     data = requests.get(url).json()
     total = data["total"]
     return total
 
 def get_raw_transaction_data(address, offset):
-    url = TESTNET_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
+    url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
     data = requests.get(url).json()
     return data
 
@@ -104,7 +103,7 @@ def get_asset_id(transactionArray, name):
 
 def get_box_id_of_asset(id):
     if id != None:
-        url = TESTNET_API_URL + "/api/v1/tokens/" + str(id)
+        url = EXPLORER_API_URL + "/api/v1/tokens/" + str(id)
         data = requests.get(url).json()
         boxId = data["boxId"]
         return boxId
@@ -113,7 +112,7 @@ def get_box_id_of_asset(id):
 
 def get_box_id_address(boxId):
     if boxId != None:
-        url = TESTNET_API_URL + "/api/v1/boxes/" + str(boxId)
+        url = EXPLORER_API_URL + "/api/v1/boxes/" + str(boxId)
         data = requests.get(url).json()
         address = data["address"]
         return address
