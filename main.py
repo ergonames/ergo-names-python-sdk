@@ -6,6 +6,8 @@ EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
 
+API_CALLS = 0
+
 class Transaction:
 
     def __init__(self, id, inclusionHeight, outputs):
@@ -50,8 +52,10 @@ def get_total_transactions_of_mint_address(address):
     return total
 
 def get_raw_transaction_data(address, offset):
+    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
     data = requests.get(url).json()
+    API_CALLS += 1
     return data
 
 def create_small_transaction_array(address, offset):
@@ -102,18 +106,22 @@ def get_asset_id(transactionArray, name):
         return None
 
 def get_box_id_of_asset(id):
+    global API_CALLS
     if id != None:
         url = EXPLORER_API_URL + "/api/v1/tokens/" + str(id)
         data = requests.get(url).json()
+        API_CALLS += 1
         boxId = data["boxId"]
         return boxId
     else:
         return None
 
 def get_box_id_address(boxId):
+    global API_CALLS
     if boxId != None:
         url = EXPLORER_API_URL + "/api/v1/boxes/" + str(boxId)
         data = requests.get(url).json()
+        API_CALLS += 1
         address = data["address"]
         return address
     else:
@@ -137,7 +145,9 @@ def main():
     address = resolve_ergoname("test mint v0.1.1")
     print(address)
 
-    print("\nProgram takes " + str(time.time() - start_time) + " seconds to run")
+    print("\nTotal API Calls: " + str(API_CALLS))
+
+    print("Program takes " + str(time.time() - start_time) + " seconds to run")
 
 if __name__=="__main__":
     main()
