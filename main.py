@@ -1,5 +1,6 @@
 import requests
 import time
+import math
 
 EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
@@ -18,13 +19,23 @@ class Token:
         self.type = tType
         self.decimals = decimals
 
-def get_token_data(tokenName):
+def get_token_data(tokenName, limit, offset):
     global API_CALLS
-    url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName)
+    url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName) + "&limit=" + str(limit) + "&offset=" + str(offset)
     print(url)
     API_CALLS += 1
-    data = requests.get(url).json()['items']
+    data = requests.get(url).json()
     return data
+
+def create_token_data(tokenName):
+    total = get_token_data(tokenName, 1, 0)['total']
+    neededCalls = math.floor(total / 500) + 1
+    tokenData = []
+    offset = 0
+    for i in range(neededCalls):
+        data = get_token_data(tokenName, 500, offset)['items']
+        tokenData += data
+    return tokenData
 
 def convert_data_to_token(data):
     tokenArray = []
@@ -70,7 +81,7 @@ def get_boxid_from_transaction_data(data):
 
 def resolve_ergoname(name):
     name = reformat_name_search(name)
-    tokenData = get_token_data(name)
+    tokenData = create_token_data(name)
     tokenArray = convert_data_to_token(tokenData)
     tokenId = get_asset_minted_at_address(tokenArray)
     tokenTransactions = get_token_transactions_data(tokenId)
