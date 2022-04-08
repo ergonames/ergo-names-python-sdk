@@ -100,7 +100,8 @@ def main():
     start_time = time.time()
 
     address = resolve_ergoname("test mint v0.1.1")
-    print("\n" + address)
+    print("\nResolved Address: " + address)
+    print("Mint Address: " + MINT_ADDRESS)
 
     print("\nExplorer calls: " + str(API_CALLS))
     print("Program time: " + str(time.time() - start_time))
