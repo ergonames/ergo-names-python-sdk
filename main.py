@@ -5,6 +5,8 @@ EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
 
+API_CALLS = 0
+
 class Token:
 
     def __init__(self, id, boxId, emmissionAmount, name, description, tType, decimals):
@@ -17,7 +19,9 @@ class Token:
         self.decimals = decimals
 
 def get_token_data(tokenName):
+    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName)
+    API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
 
@@ -29,7 +33,9 @@ def convert_data_to_token(data):
     return tokenArray
 
 def get_box_address(boxId):
+    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/boxes/" + (str(boxId))
+    API_CALLS += 1
     data = requests.get(url).json()
     return data['address']
 
@@ -46,7 +52,9 @@ def get_asset_minted_at_address(tokenArray):
     return None
 
 def get_token_transactions_data(tokenId):
+    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId)
+    API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
 
@@ -74,7 +82,8 @@ def main():
     address = resolve_ergoname("test mint v0.1.1")
     print(address)
 
-    print("\nProgram takes " + str(time.time() - start_time) + " seconds to run")
+    print("\nExplorer calls: " + str(API_CALLS))
+    print("Program time: " + str(time.time() - start_time))
 
 if __name__=="__main__":
     main()
