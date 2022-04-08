@@ -21,6 +21,7 @@ class Token:
 def get_token_data(tokenName):
     global API_CALLS
     url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName)
+    print(url)
     API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
@@ -35,6 +36,7 @@ def convert_data_to_token(data):
 def get_box_address(boxId):
     global API_CALLS
     url = EXPLORER_API_URL + "api/v1/boxes/" + (str(boxId))
+    print(url)
     API_CALLS += 1
     data = requests.get(url).json()
     return data['address']
@@ -54,6 +56,7 @@ def get_asset_minted_at_address(tokenArray):
 def get_token_transactions_data(tokenId):
     global API_CALLS
     url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId)
+    print(url)
     API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
@@ -66,6 +69,7 @@ def get_boxid_from_transaction_data(data):
     return data['boxId']
 
 def resolve_ergoname(name):
+    name = reformat_name_search(name)
     tokenData = get_token_data(name)
     tokenArray = convert_data_to_token(tokenData)
     tokenId = get_asset_minted_at_address(tokenArray)
@@ -75,12 +79,21 @@ def resolve_ergoname(name):
     address = get_box_address(tokenCurrentBoxId)
     return address
 
+def reformat_name_search(name):
+    new = ""
+    for i in name:
+        if i == " ":
+            new += "%20"
+        else:
+            new += i
+    return new
+
 def main():
 
     start_time = time.time()
 
     address = resolve_ergoname("test mint v0.1.1")
-    print(address)
+    print("\n" + address)
 
     print("\nExplorer calls: " + str(API_CALLS))
     print("Program time: " + str(time.time() - start_time))
