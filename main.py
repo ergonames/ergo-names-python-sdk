@@ -1,133 +1,70 @@
 import requests
-import math
 import time
 
 EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
 
-class Transaction:
+class Token:
 
-    def __init__(self, id, inclusionHeight, outputs):
+    def __init__(self, id, boxId, emmissionAmount, name, description, tType, decimals):
         self.id = id
-        self.inclusionHeight = inclusionHeight
-        self.outputs = outputs
-
-    def update_outputs(self):
-        outputArray = []
-        for i in self.outputs:
-            assets = i["assets"]
-            opt = Output(assets)
-            outputArray.append(opt)
-        self.outputs = outputArray
-
-
-class Output:
-
-    def __init__(self, assets):
-        self.assets = assets
-
-    def update_assets(self):
-        assetArray = []
-        for i in self.assets:
-            id = i["tokenId"]
-            name = i["name"]
-            asset = Asset(id, name)
-            assetArray.append(asset)
-        self.assets = assetArray
-
-
-class Asset:
-
-    def __init__(self, tokenId, name):
-        self.tokenId = tokenId
+        self.boxId = boxId
+        self.emmisionAmount = emmissionAmount
         self.name = name
+        self.description = description
+        self.type = tType
+        self.decimals = decimals
 
-def get_total_transactions_of_mint_address(address):
-    url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/transactions"
-    data = requests.get(url).json()
-    total = data["total"]
-    return total
-
-def get_raw_transaction_data(address, offset):
-    url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/transactions?limit=500&offset=" + str(offset)
-    data = requests.get(url).json()
+def get_token_data(tokenName):
+    url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName)
+    data = requests.get(url).json()['items']
     return data
 
-def create_small_transaction_array(address, offset):
-    transactionData = get_raw_transaction_data(address, offset)["items"]
-    transactionArray = []
-    for i in transactionData:
-        id = i["id"]
-        inclusionHeight = i["inclusionHeight"]
-        outputs = i["outputs"]
-        t = Transaction(id, inclusionHeight, outputs)
-        transactionArray.append(t)
-    return transactionArray
+def convert_data_to_token(data):
+    tokenArray = []
+    for i in data:
+        tk = Token(i['id'], i['boxId'], ['emmissionAmount'], i['name'], i['description'], i['type'], i['decimals'])
+        tokenArray.append(tk)
+    return tokenArray
 
-def create_complete_transaction_array():
-    total = get_total_transactions_of_mint_address(MINT_ADDRESS)
-    neededCalls = math.floor(total / 500) + 1
-    offset = 0
-    transactionArray = []
-    for i in range(neededCalls):
-        transactionArray += create_small_transaction_array(MINT_ADDRESS, offset)
-        offset += 500
-    return transactionArray
+def get_box_address(boxId):
+    url = EXPLORER_API_URL + "api/v1/boxes/" + (str(boxId))
+    data = requests.get(url).json()
+    return data['address']
 
-def update_transaction_array(transactionArray):
-    index = 0
-    for tx in transactionArray:
-        tx.update_outputs()
-        for opt in transactionArray[index].outputs:
-            opt.update_assets()
-        index += 1
-    return transactionArray
+def check_box_address(address):
+    if address == MINT_ADDRESS:
+        return True
+    return False
 
-def get_asset_id(transactionArray, name):
-    exists = False
-    id = ""
-    for i in transactionArray:
-        for o in i.outputs:
-            if check_if_transaction_mints_token():
-                for a in o.assets:
-                    if name == a.name:
-                        exists = True
-                        id = a.tokenId
-                        break
-    
-    if exists:
-        return id
-    else:
-        return None
+def get_asset_minted_at_address(tokenArray):
+    for i in tokenArray:
+        address = get_box_address(i.boxId)
+        if (check_box_address(address)):
+            return i.id
+    return None
 
-def get_box_id_of_asset(id):
-    if id != None:
-        url = EXPLORER_API_URL + "/api/v1/tokens/" + str(id)
-        data = requests.get(url).json()
-        boxId = data["boxId"]
-        return boxId
-    else:
-        return None
+def get_token_transactions_data(tokenId):
+    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId)
+    data = requests.get(url).json()['items']
+    return data
 
-def get_box_id_address(boxId):
-    if boxId != None:
-        url = EXPLORER_API_URL + "/api/v1/boxes/" + str(boxId)
-        data = requests.get(url).json()
-        address = data["address"]
-        return address
-    else:
-        return None
+def get_last_transaction(data):
+    length = len(data)
+    return data[length-1]
 
-def check_if_transaction_mints_token():
-    return True
+def get_boxid_from_transaction_data(data):
+    return data['boxId']
 
 def resolve_ergoname(name):
-    transactionArray = create_complete_transaction_array()
-    transactionArray = update_transaction_array(transactionArray)
-    id = get_asset_id(transactionArray, name)
-    boxId = get_box_id_of_asset(id)
-    address = get_box_id_address(boxId)
+    tokenData = get_token_data(name)
+    tokenArray = convert_data_to_token(tokenData)
+    tokenId = get_asset_minted_at_address(tokenArray)
+    tokenTransactions = get_token_transactions_data(tokenId)
+    tokenLastTransaction = get_last_transaction(tokenTransactions)
+    tokenCurrentBoxId = get_boxid_from_transaction_data(tokenLastTransaction)
+    address = get_box_address(tokenCurrentBoxId)
     return address
 
 def main():
