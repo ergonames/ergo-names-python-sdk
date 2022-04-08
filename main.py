@@ -10,14 +10,10 @@ API_CALLS = 0
 
 class Token:
 
-    def __init__(self, id, boxId, emmissionAmount, name, description, tType, decimals):
+    def __init__(self, id, boxId, name):
         self.id = id
         self.boxId = boxId
-        self.emmisionAmount = emmissionAmount
         self.name = name
-        self.description = description
-        self.type = tType
-        self.decimals = decimals
 
 def get_token_data(tokenName, limit, offset):
     global API_CALLS
@@ -40,7 +36,7 @@ def create_token_data(tokenName):
 def convert_data_to_token(data):
     tokenArray = []
     for i in data:
-        tk = Token(i['id'], i['boxId'], ['emmissionAmount'], i['name'], i['description'], i['type'], i['decimals'])
+        tk = Token(i['id'], i['boxId'], i['name'])
         tokenArray.append(tk)
     return tokenArray
 
