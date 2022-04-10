@@ -62,11 +62,20 @@ def get_asset_minted_at_address(tokenArray):
 
 def get_token_transactions_data(tokenId):
     global API_CALLS
-    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId)
+    total = get_max_transactions_for_token(tokenId)
+    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1&offset=" + str(total-1)
     print(url)
     API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
+
+def get_max_transactions_for_token(tokenId):
+    global API_CALLS
+    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1"
+    print(url)
+    API_CALLS += 1
+    total = requests.get(url).json()['total']
+    return total
 
 def get_last_transaction(data):
     length = len(data)
