@@ -1,12 +1,9 @@
 import requests
-import time
 import math
 
 EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
-
-API_CALLS = 0
 
 class Token:
 
@@ -16,10 +13,7 @@ class Token:
         self.name = name
 
 def get_token_data(tokenName, limit, offset):
-    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName) + "&limit=" + str(limit) + "&offset=" + str(offset)
-    print(url)
-    API_CALLS += 1
     data = requests.get(url).json()
     return data
 
@@ -41,10 +35,7 @@ def convert_data_to_token(data):
     return tokenArray
 
 def get_box_address(boxId):
-    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/boxes/" + (str(boxId))
-    print(url)
-    API_CALLS += 1
     data = requests.get(url).json()
     return data['address']
 
@@ -61,19 +52,13 @@ def get_asset_minted_at_address(tokenArray):
     return None
 
 def get_token_transactions_data(tokenId):
-    global API_CALLS
     total = get_max_transactions_for_token(tokenId)
     url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1&offset=" + str(total-1)
-    print(url)
-    API_CALLS += 1
     data = requests.get(url).json()['items']
     return data
 
 def get_max_transactions_for_token(tokenId):
-    global API_CALLS
     url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1"
-    print(url)
-    API_CALLS += 1
     total = requests.get(url).json()['total']
     return total
 
@@ -104,16 +89,5 @@ def reformat_name_search(name):
             new += i
     return new
 
-def main():
-
-    start_time = time.time()
-
-    address = resolve_ergoname("test mint v0.1.1")
-    print("\nResolved Address: " + address)
-    print("Mint Address: " + MINT_ADDRESS)
-
-    print("\nExplorer calls: " + str(API_CALLS))
-    print("Program time: " + str(time.time() - start_time))
-
 if __name__=="__main__":
-    main()
+    resolve_ergoname()
