@@ -22,10 +22,13 @@ def create_token_data(tokenName):
     neededCalls = math.floor(total / 500) + 1
     tokenData = []
     offset = 0
-    for i in range(neededCalls):
-        data = get_token_data(tokenName, 500, offset)['items']
-        tokenData += data
-    return tokenData
+    if total > 0:
+        for i in range(neededCalls):
+            data = get_token_data(tokenName, 500, offset)['items']
+            tokenData += data
+        return tokenData
+    else:
+        return None
 
 def convert_data_to_token(data):
     tokenArray = []
@@ -72,13 +75,16 @@ def get_boxid_from_transaction_data(data):
 def resolve_ergoname(name):
     name = reformat_name_search(name)
     tokenData = create_token_data(name)
-    tokenArray = convert_data_to_token(tokenData)
-    tokenId = get_asset_minted_at_address(tokenArray)
-    tokenTransactions = get_token_transactions_data(tokenId)
-    tokenLastTransaction = get_last_transaction(tokenTransactions)
-    tokenCurrentBoxId = get_boxid_from_transaction_data(tokenLastTransaction)
-    address = get_box_address(tokenCurrentBoxId)
-    return address
+    if tokenData != None:
+        tokenArray = convert_data_to_token(tokenData)
+        tokenId = get_asset_minted_at_address(tokenArray)
+        tokenTransactions = get_token_transactions_data(tokenId)
+        tokenLastTransaction = get_last_transaction(tokenTransactions)
+        tokenCurrentBoxId = get_boxid_from_transaction_data(tokenLastTransaction)
+        address = get_box_address(tokenCurrentBoxId)
+        return address
+    else:
+        return None
 
 def reformat_name_search(name):
     new = ""
@@ -88,6 +94,3 @@ def reformat_name_search(name):
         else:
             new += i
     return new
-
-if __name__=="__main__":
-    resolve_ergoname()
