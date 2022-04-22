@@ -7,12 +7,12 @@ Converted to importable library coming soon
 #### Resolving ErgoNames
 
 ```python
-name = "balb"
+name = "~balb"
 address = resolve_ergoname(name)
 ```
 
 ```
-3WycHxEz8ExeEWpUBwvu1FKrpY8YQCiH1S9PfnAvBX1K73BXBXZa
+3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL
 ```
 
 ### Contribute
