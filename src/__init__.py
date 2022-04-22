@@ -1,1 +1,0 @@
-from ergonames import resolve_ergoname
