@@ -30,7 +30,7 @@ def create_token_data(tokenName):
     else:
         return None
 
-def convert_data_to_token(data):
+def convert_token_data_to_token(data):
     tokenArray = []
     for i in data:
         tk = Token(i['id'], i['boxId'], i['name'])
@@ -54,7 +54,7 @@ def get_asset_minted_at_address(tokenArray):
             return i.id
     return None
 
-def get_token_transactions_data(tokenId):
+def get_token_transaction_data(tokenId):
     total = get_max_transactions_for_token(tokenId)
     url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1&offset=" + str(total-1)
     data = requests.get(url).json()['items']
@@ -69,22 +69,8 @@ def get_last_transaction(data):
     length = len(data)
     return data[length-1]
 
-def get_boxid_from_transaction_data(data):
+def get_box_id_from_transaction_data(data):
     return data['boxId']
-
-def resolve_ergoname(name):
-    name = reformat_name_search(name)
-    tokenData = create_token_data(name)
-    if tokenData != None:
-        tokenArray = convert_data_to_token(tokenData)
-        tokenId = get_asset_minted_at_address(tokenArray)
-        tokenTransactions = get_token_transactions_data(tokenId)
-        tokenLastTransaction = get_last_transaction(tokenTransactions)
-        tokenCurrentBoxId = get_boxid_from_transaction_data(tokenLastTransaction)
-        address = get_box_address(tokenCurrentBoxId)
-        return address
-    else:
-        return None
 
 def reformat_name_search(name):
     new = ""
@@ -94,3 +80,17 @@ def reformat_name_search(name):
         else:
             new += i
     return new
+
+def resolve_ergoname(name):
+    name = reformat_name_search(name)
+    tokenData = create_token_data(name)
+    if tokenData != None:
+        tokenArray = convert_token_data_to_token(tokenData)
+        tokenId = get_asset_minted_at_address(tokenArray)
+        tokenTransactions = get_token_transaction_data(tokenId)
+        tokenLastTransaction = get_last_transaction(tokenTransactions)
+        tokenCurrentBoxId = get_box_id_from_transaction_data(tokenLastTransaction)
+        address = get_box_address(tokenCurrentBoxId)
+        return address
+    else:
+        return None
