@@ -72,17 +72,7 @@ def get_last_transaction(data):
 def get_box_id_from_transaction_data(data):
     return data['boxId']
 
-def reformat_name_search(name):
-    new = ""
-    for i in name:
-        if i == " ":
-            new += "%20"
-        else:
-            new += i
-    return new
-
 def resolve_ergoname(name):
-    name = reformat_name_search(name)
     tokenData = create_token_data(name)
     if tokenData != None:
         tokenArray = convert_token_data_to_token(tokenData)
