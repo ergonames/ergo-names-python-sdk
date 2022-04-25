@@ -131,6 +131,7 @@ def convert_timestamp_to_date(timestamp):
     return date
 
 def resolve_ergoname(name):
+    name = reformat_name(name)
     tokenData = create_token_data(name)
     if tokenData != None:
         tokenArray = convert_token_data_to_token(tokenData)
@@ -143,6 +144,7 @@ def resolve_ergoname(name):
     return None
 
 def check_already_registered(name):
+    name = reformat_name(name)
     address = resolve_ergoname(name)
     if address != None:
         return True
@@ -160,9 +162,11 @@ def get_total_amount_owned(address):
     return len(owned)
 
 def check_name_price(name):
+    name = reformat_name(name)
     return None
 
 def get_block_id_registered(name):
+    name = reformat_name(name)
     tokenData = create_token_data(name)
     if tokenData != None:
         tokenArray = convert_token_data_to_token(tokenData)
@@ -176,6 +180,7 @@ def get_block_id_registered(name):
     return None
 
 def get_block_registered(name):
+    name = reformat_name(name)
     tokenData = create_token_data(name)
     if tokenData != None:
         tokenArray = convert_token_data_to_token(tokenData)
@@ -189,6 +194,7 @@ def get_block_registered(name):
     return None
 
 def get_timestamp_registered(name):
+    name = reformat_name(name)
     blockRegistered = get_block_id_registered(name)
     if blockRegistered != None:
         blockData = get_block_by_block_height(blockRegistered)
@@ -197,6 +203,7 @@ def get_timestamp_registered(name):
     return None
 
 def get_date_registered(name):
+    name = reformat_name(name)
     blockRegistered = get_block_id_registered(name)
     if blockRegistered != None:
         blockData = get_block_by_block_height(blockRegistered)
@@ -204,3 +211,24 @@ def get_date_registered(name):
         date = convert_timestamp_to_date(timestamp)
         return date
     return None
+
+def reformat_name(name):
+    name = name.lower()
+    return name
+
+def check_name_valid(name):
+    for i in name:
+        asciiCode = int(ord(i))
+        if asciiCode <= 44:
+            return False
+        elif asciiCode == 47:
+            return False
+        elif asciiCode >= 58 and asciiCode <= 94:
+            return False
+        elif asciiCode == 96:
+            return False
+        elif asciiCode >= 123 and asciiCode <= 125:
+            return False
+        elif asciiCode >= 127:
+            return False
+    return True
