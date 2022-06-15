@@ -3,7 +3,7 @@ import math
 import datetime
 
 EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
-
+ 
 MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
 
 class Token:
@@ -13,8 +13,8 @@ class Token:
         self.boxId = boxId
         self.name = name
 
-def _get_address_data(address):
-    url = EXPLORER_API_URL + "api/v1/addresses/" + str(address) + "/balance/confirmed"
+def _get_address_data(address, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/addresses/" + str(address) + "/balance/confirmed"
     data = requests.get(url).json()
     return data
 
@@ -44,8 +44,8 @@ def _check_correct_ownership(tokenArray, address):
             ownedErgoNames.append(i)
     return ownedErgoNames
 
-def _get_token_data(tokenName, limit, offset):
-    url = EXPLORER_API_URL + "api/v1/tokens/search?query=" + str(tokenName) + "&limit=" + str(limit) + "&offset=" + str(offset)
+def _get_token_data(tokenName, limit, offset, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/tokens/search?query=" + str(tokenName) + "&limit=" + str(limit) + "&offset=" + str(offset)
     data = requests.get(url).json()
     return data
 
@@ -69,8 +69,8 @@ def _convert_token_data_to_token(data):
         tokenArray.append(tk)
     return tokenArray
 
-def _get_box_address(boxId):
-    url = EXPLORER_API_URL + "api/v1/boxes/" + (str(boxId))
+def _get_box_address(boxId, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/boxes/" + (str(boxId))
     data = requests.get(url).json()
     return data['address']
 
@@ -86,19 +86,19 @@ def _get_asset_minted_at_address(tokenArray):
             return i.id
     return None
 
-def _get_token_transaction_data(tokenId):
+def _get_token_transaction_data(tokenId, explorerUrl = EXPLORER_API_URL):
     total = _get_max_transactions_for_token(tokenId)
-    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1&offset=" + str(total-1)
+    url = explorerUrl + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1&offset=" + str(total-1)
     data = requests.get(url).json()['items']
     return data
 
-def _get_max_transactions_for_token(tokenId):
-    url = EXPLORER_API_URL + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1"
+def _get_max_transactions_for_token(tokenId, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/assets/search/byTokenId?query=" + str(tokenId) + "&limit=1"
     total = requests.get(url).json()['total']
     return total
 
-def _get_box_by_id(boxId):
-    url = EXPLORER_API_URL + "api/v1/boxes/" + str(boxId)
+def _get_box_by_id(boxId, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/boxes/" + str(boxId)
     data = requests.get(url).json()
     return data
 
@@ -118,8 +118,8 @@ def _get_settlement_height_from_box_data(data):
 def _get_block_id_from_box_data(data):
     return data['blockId']
 
-def _get_block_by_block_height(height):
-    url = EXPLORER_API_URL + "api/v1/blocks/" + str(height)
+def _get_block_by_block_height(height, explorerUrl = EXPLORER_API_URL):
+    url = explorerUrl + "api/v1/blocks/" + str(height)
     data = requests.get(url).json()
     return data
 
@@ -232,3 +232,5 @@ def check_name_valid(name):
         elif asciiCode >= 127:
             return False
     return True
+
+print(resolve_ergoname("~balb"))
