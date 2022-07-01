@@ -232,5 +232,3 @@ def check_name_valid(name):
         elif asciiCode >= 127:
             return False
     return True
-
-print(resolve_ergoname("~balb"))
