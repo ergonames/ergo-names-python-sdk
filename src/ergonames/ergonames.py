@@ -4,7 +4,7 @@ import datetime
 
 EXPLORER_API_URL = "https://api-testnet.ergoplatform.com/"
  
-MINT_ADDRESS = "3WwKzFjZGrtKAV7qSCoJsZK9iJhLLrUa3uwd4yw52bVtDVv6j5TL"
+MINT_ADDRESS = "3WycHxEz8ExeEWpUBwvu1FKrpY8YQCiH1S9PfnAvBX1K73BXBXZa"
 
 class Token:
 
