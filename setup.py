@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="ergonames",
-    version="0.2.6",
+    version="0.3.1",
     author="ErgoNames",
     author_email="developer@ergonames.com",
     description="A SDK for resolving ErgoNames.",
@@ -21,6 +21,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=setuptools.find_packages(where="ergonames"),
     python_requires=">=3.6",
 )
