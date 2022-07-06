@@ -20,7 +20,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    package_dir={"": "src"},
+    package_dir={"": "ergonames"},
     packages=setuptools.find_packages(where="ergonames"),
     python_requires=">=3.6",
 )
