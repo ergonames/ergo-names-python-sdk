@@ -111,13 +111,13 @@ def get_token_transaction_data(token_id, explorer_url = EXPLORER_API_URL):
 def get_token_last_transaction(token_transactions):
     token_transactions = token_transactions["items"]
     if len(token_transactions) > 0:
-        return token_transactions[-1]
+        return token_transactions[0]
     return None
 
 def get_token_first_transaction(token_transactions):
     token_transactions = token_transactions["items"]
     if len(token_transactions) > 0:
-        return token_transactions[0]
+        return token_transactions[-1]
     return None
 
 def get_token_data_by_token_id(token_id, explorer_url = EXPLORER_API_URL):
