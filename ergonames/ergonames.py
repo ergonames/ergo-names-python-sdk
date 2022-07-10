@@ -110,15 +110,27 @@ def get_token_transaction_data(token_id, explorer_url = EXPLORER_API_URL):
 
 def get_token_last_transaction(token_transactions):
     token_transactions = token_transactions["items"]
-    if len(token_transactions) > 0:
-        return token_transactions[0]
-    return None
+    last_transaction = None
+    creation_height = 0
+    for i in token_transactions:
+        box_id = i["boxId"]
+        box_info = get_box_by_id(box_id)
+        if box_info["creationHeight"] > creation_height:
+            creation_height = box_info["creationHeight"]
+            last_transaction = i
+    return last_transaction
 
 def get_token_first_transaction(token_transactions):
     token_transactions = token_transactions["items"]
-    if len(token_transactions) > 0:
-        return token_transactions[-1]
-    return None
+    last_transaction = None
+    creation_height = None
+    for i in token_transactions:
+        box_id = i["boxId"]
+        box_info = get_box_by_id(box_id)
+        if creation_height is None or box_info["creationHeight"] < creation_height:
+            creation_height = box_info["creationHeight"]
+            last_transaction = i
+    return last_transaction
 
 def get_token_data_by_token_id(token_id, explorer_url = EXPLORER_API_URL):
     url = explorer_url + "api/v1/tokens/" + token_id
