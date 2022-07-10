@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="ergonames",
-    version="0.3.3",
+    version="0.4.0",
     author="ErgoNames",
     author_email="developer@ergonames.com",
     description="A SDK for resolving ErgoNames.",
